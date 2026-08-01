@@ -5,7 +5,7 @@
    Bump CACHE_NAME whenever app files change to force an update.
    ========================================================== */
 
-const CACHE_NAME = "habit-ledger-v1";
+const CACHE_NAME = "habit-ledger-v2";
 
 const APP_SHELL = [
   "./",
@@ -13,9 +13,9 @@ const APP_SHELL = [
   "./styles.css",
   "./app.js",
   "./manifest.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/icon-maskable-512.png",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./icon-maskable-512.png",
 ];
 
 self.addEventListener("install", (event) => {
