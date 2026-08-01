@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Habit Tracker & Productivity Dashboard</title>
+<meta name="description" content="A dark-mode, ledger-style habit tracker and productivity dashboard." />
+<meta name="theme-color" content="#0B0E13" />
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230B0E13%22/><text x=%2250%22 y=%2266%22 font-size=%2255%22 text-anchor=%22middle%22 fill=%22%23F2B705%22 font-family=%22monospace%22>✓</text></svg>" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ HEADER ============ -->
+  <header class="header">
+    <div class="header__top">
+      <div class="brand">
+        <span class="brand__mark">▦</span>
+        <div class="brand__text">
+          <h1 class="brand__title">Habit Ledger</h1>
+          <p class="brand__sub">Productivity Dashboard</p>
+        </div>
+      </div>
+      <button id="menuBtn" class="icon-btn" aria-label="Open settings" aria-haspopup="true" aria-expanded="false">⋮</button>
+    </div>
+
+    <div id="menuPanel" class="menu-panel hidden" role="menu">
+      <button class="menu-panel__item" id="resetWeekBtn" role="menuitem">Clear this week's check‑ins</button>
+      <button class="menu-panel__item" id="resetAllBtn" role="menuitem">Reset all data</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-card__label">Total Habits</span>
+        <span class="stat-card__value" id="statTotalHabits">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Completed Today</span>
+        <span class="stat-card__value" id="statCompletedToday">0/0</span>
+      </div>
+      <div class="stat-card stat-card--ring">
+        <div class="ring" id="progressRing">
+          <svg viewBox="0 0 84 84" class="ring__svg">
+            <circle cx="42" cy="42" r="36" class="ring__track" />
+            <circle cx="42" cy="42" r="36" class="ring__fill" id="ringFill" />
+          </svg>
+          <div class="ring__label">
+            <span id="ringPercent">0%</span>
+            <small>today</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ WEEK NAV ============ -->
+  <section class="week-nav">
+    <button id="prevWeekBtn" class="ghost-btn" aria-label="Previous week">‹</button>
+    <div class="week-nav__label">
+      <span id="weekRangeLabel">—</span>
+      <button id="todayBtn" class="link-btn">jump to today</button>
+    </div>
+    <button id="nextWeekBtn" class="ghost-btn" aria-label="Next week">›</button>
+  </section>
+
+  <!-- ============ HABIT GRID ============ -->
+  <section class="panel">
+    <div class="panel__head">
+      <h2 class="panel__title"><span class="cell-ref">A1</span> Daily Check‑in Grid</h2>
+      <button id="addHabitBtn" class="primary-btn">+ Add Habit</button>
+    </div>
+
+    <div id="addHabitForm" class="add-form hidden">
+      <input type="text" id="newHabitEmoji" class="add-form__emoji" placeholder="🔥" maxlength="4" aria-label="Habit emoji" />
+      <input type="text" id="newHabitName" class="add-form__name" placeholder="e.g. Cold Shower" aria-label="Habit name" />
+      <button id="saveHabitBtn" class="primary-btn">Save</button>
+      <button id="cancelHabitBtn" class="ghost-btn">Cancel</button>
+    </div>
+
+    <div class="grid-scroll">
+      <table class="habit-grid" id="habitGrid">
+        <thead>
+          <tr id="gridHeadRow">
+            <th class="habit-grid__habit-col">Habit</th>
+          </tr>
+        </thead>
+        <tbody id="gridBody">
+          <!-- rows injected by app.js -->
+        </tbody>
+      </table>
+    </div>
+    <p id="emptyState" class="empty-state hidden">No habits yet — add your first one above. ↑</p>
+  </section>
+
+  <!-- ============ ANALYTICS ============ -->
+  <section class="panel">
+    <div class="panel__head">
+      <h2 class="panel__title"><span class="cell-ref">B1</span> Analytics & Progress</h2>
+      <div class="scope-toggle" role="tablist" aria-label="Analytics range">
+        <button class="scope-toggle__btn is-active" data-scope="week" role="tab" aria-selected="true">Week</button>
+        <button class="scope-toggle__btn" data-scope="month" role="tab" aria-selected="false">Month</button>
+      </div>
+    </div>
+
+    <div class="analytics-table-wrap">
+      <table class="analytics-table">
+        <thead>
+          <tr>
+            <th>Habit</th>
+            <th>Progress</th>
+            <th class="num">Completed</th>
+            <th class="num">Target</th>
+            <th class="num">%</th>
+          </tr>
+        </thead>
+        <tbody id="analyticsBody">
+          <!-- rows injected by app.js -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span id="offlineBadge" class="offline-badge hidden">● offline — changes saved locally</span>
+    <span class="footer__formula">=SUM(discipline)</span>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
